@@ -74,6 +74,8 @@ abstract class BasicBoxTest(
     val TEST_FUNCTION = "box"
     private val OLD_MODULE_SUFFIX = "-old"
 
+    open val generateSourceMap get() = false
+
     fun doTest(filePath: String) {
         val file = File(filePath)
         val outputDir = getOutputDir(file)
@@ -283,7 +285,7 @@ abstract class BasicBoxTest(
         configuration.put(JSConfigurationKeys.MODULE_KIND, module.moduleKind)
         configuration.put(JSConfigurationKeys.TARGET, EcmaVersion.v5)
 
-        //configuration.put(JSConfigurationKeys.SOURCE_MAP, shouldGenerateSourceMap())
+        configuration.put(JSConfigurationKeys.SOURCE_MAP, generateSourceMap)
         configuration.put(JSConfigurationKeys.META_INFO, multiModule)
 
         if (typedArraysEnabled) {
