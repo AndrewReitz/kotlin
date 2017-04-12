@@ -249,7 +249,6 @@ private fun getReferenceKind(reference: PsiReference, referencedElement: PsiElem
     element.getParentOfTypeAndBranch<KtCallableReferenceExpression> { callableReference }?.let {
         if (it.receiverExpression != null) return ReferenceKind.IRRELEVANT
         if (referencedElement is KtDeclaration && referencedElement.parent is KtFile) return ReferenceKind.UNQUALIFIABLE
-        if (referencedElement is PsiMember && referencedElement.getContainingClass() == null) return ReferenceKind.UNQUALIFIABLE
     }
 
     return ReferenceKind.QUALIFIABLE
