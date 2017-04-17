@@ -48,6 +48,7 @@ public class JavaClassFinderImpl implements JavaClassFinder {
     private GlobalSearchScope baseScope;
     private GlobalSearchScope javaSearchScope;
     private KotlinJavaPsiFacade javaFacade;
+    private boolean useFastClassFilesReading;
 
     @Inject
     public void setProject(@NotNull Project project) {
@@ -88,9 +89,10 @@ public class JavaClassFinderImpl implements JavaClassFinder {
     }
 
     @PostConstruct
-    public void initialize(@NotNull BindingTrace trace, @NotNull KotlinCodeAnalyzer codeAnalyzer) {
+    public void initialize(@NotNull BindingTrace trace, @NotNull KotlinCodeAnalyzer codeAnalyzer, boolean useFastClassFilesReading) {
         javaSearchScope = new FilterOutKotlinSourceFilesScope(baseScope);
         javaFacade = KotlinJavaPsiFacade.getInstance(project);
+        this.useFastClassFilesReading = useFastClassFilesReading;
         CodeAnalyzerInitializer.Companion.getInstance(project).initialize(trace, codeAnalyzer.getModuleDescriptor(), codeAnalyzer);
     }
 
@@ -99,7 +101,7 @@ public class JavaClassFinderImpl implements JavaClassFinder {
     public JavaClass findClass(@NotNull ClassId classId) {
         JavaFileManager fileManager = (JavaFileManager) project.getPicoContainer().getComponentInstanceOfType(JavaFileManager.class);
 
-        if (fileManager instanceof KotlinCliJavaFileManager) {
+        if (fileManager instanceof KotlinCliJavaFileManager && useFastClassFilesReading) {
             return ((KotlinCliJavaFileManager) fileManager).findJavaClass(classId, javaSearchScope);
         }
 

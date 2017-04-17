@@ -143,6 +143,7 @@ object TopDownAnalyzerFacadeForJVM {
                 }
                 else null
 
+        val useFastClassFilesReading = configuration[JVMConfigurationKeys.USE_FAST_CLASS_FILES_READING, false]
         val dependencyModule = if (separateModules) {
             val dependenciesContext = ContextForNewModule(
                     moduleContext, Name.special("<dependencies of ${configuration.getNotNull(CommonConfigurationKeys.MODULE_NAME)}>"),
@@ -154,7 +155,8 @@ object TopDownAnalyzerFacadeForJVM {
 
             val dependenciesContainer = createContainerForTopDownAnalyzerForJvm(
                     dependenciesContext, trace, DeclarationProviderFactory.EMPTY, dependencyScope, lookupTracker,
-                    packagePartProvider(dependencyScope), moduleClassResolver, jvmTarget, languageVersionSettings
+                    packagePartProvider(dependencyScope), moduleClassResolver, jvmTarget, languageVersionSettings,
+                    useFastClassFilesReading
             )
 
             StorageComponentContainerContributor.getInstances(project).forEach { it.onContainerComposed(dependenciesContainer, null) }
@@ -181,7 +183,8 @@ object TopDownAnalyzerFacadeForJVM {
         // TODO: get rid of duplicate invocation of CodeAnalyzerInitializer#initialize, or refactor CliLightClassGenerationSupport
         val container = createContainerForTopDownAnalyzerForJvm(
                 moduleContext, trace, declarationProviderFactory(storageManager, files), sourceScope, lookupTracker,
-                partProvider, moduleClassResolver, jvmTarget, languageVersionSettings
+                partProvider, moduleClassResolver, jvmTarget, languageVersionSettings,
+                useFastClassFilesReading
         ).apply {
             initJvmBuiltInsForTopDownAnalysis()
             (partProvider as? IncrementalPackagePartProvider)?.deserializationConfiguration = get<DeserializationConfiguration>()
