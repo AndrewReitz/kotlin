@@ -27,6 +27,7 @@ import com.intellij.debugger.engine.SuspendContextImpl
 import com.intellij.debugger.engine.evaluation.CodeFragmentKind
 import com.intellij.debugger.engine.evaluation.EvaluationContextImpl
 import com.intellij.debugger.engine.evaluation.TextWithImportsImpl
+import com.intellij.debugger.engine.events.SuspendContextCommandImpl
 import com.intellij.debugger.impl.DebuggerContextImpl
 import com.intellij.debugger.impl.JvmSteppingCommandProvider
 import com.intellij.debugger.impl.PositionUtil
@@ -146,7 +147,7 @@ abstract class KotlinDebuggerTestBase : KotlinDebuggerTestCase() {
             try {
                 initContexts(it)
                 it.printContext()
-                it.action()
+                it.runActionInSuspendCommand(action)
             }
             catch(e: AssertionError) {
                 throw e
@@ -156,6 +157,21 @@ abstract class KotlinDebuggerTestBase : KotlinDebuggerTestCase() {
                 resume(it)
             }
         })
+    }
+
+    private fun SuspendContextImpl.runActionInSuspendCommand(action: SuspendContextImpl.() -> Unit) {
+        if (myInProgress) {
+            action()
+        } else {
+            val command = object : SuspendContextCommandImpl(this) {
+                override fun contextAction(suspendContext: SuspendContextImpl) {
+                    action(suspendContext)
+                }
+            }
+
+            // Try to execute the action inside a command if we aren't already inside it.
+            debuggerContext.debugProcess?.managerThread?.invoke(command) ?: command.contextAction(this)
+        }
     }
 
     protected fun initContexts(suspendContext: SuspendContextImpl) {
