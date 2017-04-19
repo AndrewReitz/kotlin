@@ -375,7 +375,8 @@ abstract class BasicBoxTest(
     }
 
     companion object {
-        val TEST_DATA_DIR_PATH = "js/js.translator/testData/"
+        const val TEST_DATA_DIR_PATH = "js/js.translator/testData/"
+        const val DIST_DIR_JS_PATH = "dist/js/"
 
         private val COMMON_FILES_NAME = "_common"
         private val COMMON_FILES_DIR = "_commonFiles/"

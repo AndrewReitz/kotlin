@@ -16,9 +16,7 @@
 
 package org.jetbrains.kotlin.js.test.semantics;
 
-import org.jetbrains.kotlin.js.test.SingleFileTranslationTest;
-
-public final class WebDemoExamples1Test extends SingleFileTranslationTest {
+public final class WebDemoExamples1Test extends AbstractWebDemoExamplesTest {
 
     public WebDemoExamples1Test() {
         super("webDemoExamples1/");

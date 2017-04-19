@@ -17,14 +17,13 @@
 package org.jetbrains.kotlin.js.test.semantics;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.kotlin.js.test.SingleFileTranslationTest;
 import org.mozilla.javascript.EcmaError;
 
 /*
 * We can't really check that this examples work in non-browser environment, so we just check that examples compile and
 * running them produce expected error.
 * */
-public final class WebDemoCanvasExamplesTest extends SingleFileTranslationTest {
+public final class WebDemoCanvasExamplesTest extends AbstractWebDemoExamplesTest {
 
     public WebDemoCanvasExamplesTest() {
         super("webDemoCanvasExamples/");
