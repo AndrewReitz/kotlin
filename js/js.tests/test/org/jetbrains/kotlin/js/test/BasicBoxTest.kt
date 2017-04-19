@@ -68,6 +68,8 @@ abstract class BasicBoxTest(
 ) : KotlinTestWithEnvironment() {
     val additionalCommonFileDirectories = mutableListOf<String>()
 
+    open val outputPostfixFile
+
     fun doTest(filePath: String) {
         val file = File(filePath)
         val outputDir = getOutputDir(file)
@@ -139,8 +141,12 @@ abstract class BasicBoxTest(
 
             val checker = RhinoFunctionResultChecker(mainModuleName, testFactory.testPackage, TEST_FUNCTION, "OK", withModuleSystem)
             RhinoUtils.runRhinoTest(allJsFiles, checker)
+
+            performAdditionalChecks()
         }
     }
+
+    open fun performAdditionalChecks() {}
 
     private fun generateNodeRunner(
             files: Collection<String>,

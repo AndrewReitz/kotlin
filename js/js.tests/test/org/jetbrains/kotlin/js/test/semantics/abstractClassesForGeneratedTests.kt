@@ -55,7 +55,6 @@ abstract class AbstractJsTypedArraysBoxTest : BasicBoxTest(
 
 abstract class AbstractSourceMapGenerationSmokeTest : BasicBoxTest(
         BasicBoxTest.TEST_DATA_DIR_PATH + "sourcemap/",
-        "${BasicBoxTest.TEST_DATA_DIR_PATH}/out/sourcemap/"
-) {
-    override val generateSourceMap get() = true
-}
+        "${BasicBoxTest.TEST_DATA_DIR_PATH}/out/sourcemap/",
+        generateSourceMap = true
+)
