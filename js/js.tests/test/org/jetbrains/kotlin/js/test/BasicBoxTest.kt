@@ -62,11 +62,10 @@ import java.util.regex.Pattern
 abstract class BasicBoxTest(
         private val pathToTestDir: String,
         private val pathToOutputDir: String,
-        private val typedArraysEnabled: Boolean = false
+        private val typedArraysEnabled: Boolean = false,
+        private val generateSourceMap: Boolean = false
 ) : KotlinTestWithEnvironment() {
     val additionalCommonFileDirectories = mutableListOf<String>()
-
-    open val generateSourceMap get() = false
 
     fun doTest(filePath: String) {
         val file = File(filePath)
