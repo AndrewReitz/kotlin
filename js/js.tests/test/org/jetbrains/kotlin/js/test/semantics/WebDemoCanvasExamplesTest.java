@@ -47,7 +47,7 @@ public final class WebDemoCanvasExamplesTest extends AbstractWebDemoExamplesTest
 
     private void doTest(@NotNull String filename, @NotNull String firstUnknownSymbolEncountered) throws Exception {
         try {
-            checkOutput(filename, "");
+            runMainAndCheckOutput(filename, "");
             fail();
         }
         catch (EcmaError e) {
