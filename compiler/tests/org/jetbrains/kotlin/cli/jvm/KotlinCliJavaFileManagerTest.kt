@@ -199,7 +199,10 @@ class KotlinCliJavaFileManagerTest : KotlinTestWithEnvironment() {
         val coreJavaFileManager = ServiceManager.getService(project, CoreJavaFileManager::class.java) as KotlinCliJavaFileManagerImpl
 
         val root = environment.contentRootToVirtualFile(JavaSourceRoot(javaFilesDir!!, null))!!
-        coreJavaFileManager.initIndex(JvmDependenciesIndexImpl(listOf(JavaRoot(root, JavaRoot.RootType.SOURCE))))
+        coreJavaFileManager.initialize(
+                JvmDependenciesIndexImpl(listOf(JavaRoot(root, JavaRoot.RootType.SOURCE))),
+                useFastClassFilesReading = true
+        )
 
         return coreJavaFileManager
     }
@@ -217,8 +220,8 @@ class KotlinCliJavaFileManagerTest : KotlinTestWithEnvironment() {
         TestCase.assertNotNull("Could not find: $stringRequest", foundByString)
 
         TestCase.assertEquals(foundByClassId, foundByString)
-        TestCase.assertEquals("Found ${foundByClassId!!.qualifiedName} instead of $packageFQName", packageFQName + "." + classFqName,
-                              foundByClassId.qualifiedName)
+        TestCase.assertEquals("Found ${foundByClassId!!.fqName} instead of $packageFQName", packageFQName + "." + classFqName,
+                              foundByClassId.fqName!!.asString())
     }
 
     private fun assertCannotFind(manager: KotlinCliJavaFileManagerImpl, packageFQName: String, classFqName: String) {

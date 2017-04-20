@@ -18,24 +18,19 @@ package org.jetbrains.kotlin.load.java;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiPackage;
-import com.intellij.psi.impl.file.impl.JavaFileManager;
 import com.intellij.psi.search.DelegatingGlobalSearchScope;
 import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.kotlin.asJava.KtLightClassMarker;
 import org.jetbrains.kotlin.idea.KotlinFileType;
 import org.jetbrains.kotlin.load.java.structure.JavaClass;
 import org.jetbrains.kotlin.load.java.structure.JavaPackage;
-import org.jetbrains.kotlin.load.java.structure.impl.JavaClassImpl;
 import org.jetbrains.kotlin.load.java.structure.impl.JavaPackageImpl;
 import org.jetbrains.kotlin.name.ClassId;
 import org.jetbrains.kotlin.name.FqName;
 import org.jetbrains.kotlin.resolve.BindingTrace;
 import org.jetbrains.kotlin.resolve.CodeAnalyzerInitializer;
-import org.jetbrains.kotlin.resolve.jvm.KotlinCliJavaFileManager;
 import org.jetbrains.kotlin.resolve.jvm.KotlinJavaPsiFacade;
 import org.jetbrains.kotlin.resolve.lazy.KotlinCodeAnalyzer;
 
@@ -48,7 +43,6 @@ public class JavaClassFinderImpl implements JavaClassFinder {
     private GlobalSearchScope baseScope;
     private GlobalSearchScope javaSearchScope;
     private KotlinJavaPsiFacade javaFacade;
-    private boolean useFastClassFilesReading;
 
     @Inject
     public void setProject(@NotNull Project project) {
@@ -89,36 +83,16 @@ public class JavaClassFinderImpl implements JavaClassFinder {
     }
 
     @PostConstruct
-    public void initialize(@NotNull BindingTrace trace, @NotNull KotlinCodeAnalyzer codeAnalyzer, boolean useFastClassFilesReading) {
+    public void initialize(@NotNull BindingTrace trace, @NotNull KotlinCodeAnalyzer codeAnalyzer) {
         javaSearchScope = new FilterOutKotlinSourceFilesScope(baseScope);
         javaFacade = KotlinJavaPsiFacade.getInstance(project);
-        this.useFastClassFilesReading = useFastClassFilesReading;
         CodeAnalyzerInitializer.Companion.getInstance(project).initialize(trace, codeAnalyzer.getModuleDescriptor(), codeAnalyzer);
     }
 
     @Nullable
     @Override
     public JavaClass findClass(@NotNull ClassId classId) {
-        JavaFileManager fileManager = (JavaFileManager) project.getPicoContainer().getComponentInstanceOfType(JavaFileManager.class);
-
-        if (fileManager instanceof KotlinCliJavaFileManager && useFastClassFilesReading) {
-            return ((KotlinCliJavaFileManager) fileManager).findJavaClass(classId, javaSearchScope);
-        }
-
-        PsiClass psiClass = javaFacade.findClass(classId, javaSearchScope);
-        if (psiClass == null) return null;
-
-        JavaClassImpl javaClass = new JavaClassImpl(psiClass);
-        FqName fqName = classId.asSingleFqName();
-        if (!fqName.equals(javaClass.getFqName())) {
-            throw new IllegalStateException("Requested " + fqName + ", got " + javaClass.getFqName());
-        }
-
-        if (psiClass instanceof KtLightClassMarker) {
-            throw new IllegalStateException("Kotlin light classes should not be found by JavaPsiFacade, resolving: " + fqName);
-        }
-
-        return javaClass;
+        return javaFacade.findClass(classId, javaSearchScope);
     }
 
     @Nullable

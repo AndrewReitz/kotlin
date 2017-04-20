@@ -88,8 +88,7 @@ fun createContainerForLazyResolveWithJava(
         jvmTarget: JvmTarget,
         languageVersionSettings: LanguageVersionSettings,
         useBuiltInsProvider: Boolean,
-        useLazyResolve: Boolean,
-        useFastClassFilesReading: Boolean
+        useLazyResolve: Boolean
 ): StorageComponentContainer = createContainer("LazyResolveWithJava", JvmPlatform) {
     configureModule(moduleContext, JvmPlatform, jvmTarget, bindingTrace)
     configureJavaTopDownAnalysis(moduleContentScope, moduleContext.project, lookupTracker)
@@ -111,7 +110,7 @@ fun createContainerForLazyResolveWithJava(
         useImpl<LazyResolveToken>()
     }
 }.apply {
-    get<JavaClassFinderImpl>().initialize(bindingTrace, get<KotlinCodeAnalyzer>(), useFastClassFilesReading)
+    get<JavaClassFinderImpl>().initialize(bindingTrace, get<KotlinCodeAnalyzer>())
 }
 
 
@@ -124,12 +123,11 @@ fun createContainerForTopDownAnalyzerForJvm(
         packagePartProvider: PackagePartProvider,
         moduleClassResolver: ModuleClassResolver,
         jvmTarget: JvmTarget,
-        languageVersionSettings: LanguageVersionSettings,
-        useFastClassFilesReading: Boolean
+        languageVersionSettings: LanguageVersionSettings
 ): ComponentProvider = createContainerForLazyResolveWithJava(
         moduleContext, bindingTrace, declarationProviderFactory, moduleContentScope, moduleClassResolver,
         CompilerEnvironment, lookupTracker, packagePartProvider, jvmTarget, languageVersionSettings,
-        useBuiltInsProvider = true, useLazyResolve = false, useFastClassFilesReading = useFastClassFilesReading
+        useBuiltInsProvider = true, useLazyResolve = false
 )
 
 

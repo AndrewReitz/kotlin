@@ -316,8 +316,7 @@ abstract class AbstractDiagnosticsTest : BaseDiagnosticsTest() {
                 JvmPackagePartProvider(environment, moduleContentScope),
                 moduleClassResolver,
                 JvmTarget.JVM_1_6,
-                languageVersionSettings,
-                useFastClassFilesReading = false
+                languageVersionSettings
         )
         container.initJvmBuiltInsForTopDownAnalysis()
         moduleClassResolver.resolver = container.get<JavaDescriptorResolver>()

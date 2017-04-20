@@ -98,8 +98,7 @@ object JvmAnalyzerFacade : AnalyzerFacade<JvmPlatformParameters>() {
                 jvmTarget,
                 languageVersionSettings,
                 useBuiltInsProvider = false, // TODO: load built-ins from module dependencies in IDE
-                useLazyResolve = true,
-                useFastClassFilesReading = false
+                useLazyResolve = true
         )
 
         StorageComponentContainerContributor.getInstances(project).forEach { it.onContainerComposed(container, moduleInfo) }
